@@ -109,3 +109,108 @@
 
 2)
 
+a.
+    Running the Nginx container again, we can open a shell session on the container using:
+        $docker exec -it #container_id /bin/bash
+    We then locate the directory of the default index.html Nginx page(/usr/share/nginx/html/index.html).
+    We then modify the index.html file to our desired page.
+
+    Confirming the updates using :
+
+        $curl http://public_ip:8000/
+    
+    We now get the response confirming our updates:
+
+            <!DOCTYPE html>
+            <html>
+            <head>
+            <title>Welcome to MY nginx!</title>
+            <style>
+            html { color-scheme: light dark; }
+            body { width: 35em; margin: 0 auto;
+            font-family: Tahoma, Verdana, Arial, sans-serif; }
+            </style>
+            </head>
+            <body>
+            <h1>Welcome to MY nginx!</h1>
+            <p>If you see this page, the nginx web server is successfully installed and
+            working. Further configuration is required.</p>
+
+            <p>For online documentation and support please refer to
+            <a href="http://nginx.org/">nginx.org</a>.<br/>
+            Commercial support is available at
+            <a href="http://nginx.com/">nginx.com</a>.</p>
+
+            <p><em>Thank you for using nginx.</em></p>
+            </body>
+            </html>
+
+b.
+    From your computer's terminal (outside the container) download the default page locally and upload another one in its place. Validate the change.
+
+        
+        $docker cp #container_id:/usr/share/nginx/html/index.html ./index.html
+
+    Modifying the index.html file locally,and the copying it to the running container:
+
+        $docker cp index.html #container_id:/usr/share/nginx/html/index.html
+
+    We can validate the changes:
+        $curl http://public_ip:8000/
+            <!DOCTYPE html>
+            <html>
+            <head>
+            <title>Welcome to YOUR nginx!</title>
+            <style>
+            html { color-scheme: light dark; }
+            body { width: 35em; margin: 0 auto;
+            font-family: Tahoma, Verdana, Arial, sans-serif; }
+            </style>
+            </head>
+            <body>
+            <h1>Welcome to YOUR nginx!</h1>
+            <p>If you see this page, the nginx web server is successfully installed and
+            working. Further configuration is required.</p>
+
+            <p>For online documentation and support please refer to
+            <a href="http://nginx.org/">nginx.org</a>.<br/>
+            Commercial support is available at
+            <a href="http://nginx.com/">nginx.com</a>.</p>
+
+            <p><em>Thank you for using nginx.</em></p>
+            </body>
+            </html>    
+
+c.
+    Close the container, delete it and start another instance. Do you see the changes? Why?
+        
+        $docker stop #container_id
+        $docker rm #container_id
+        $docker run -d -p 8000:80 nginx:1.27.4
+        $curl http://public_ip:8000/
+            <!DOCTYPE html>
+            <html>
+            <head>
+            <title>Welcome to nginx!</title>
+            <style>
+            html { color-scheme: light dark; }
+            body { width: 35em; margin: 0 auto;
+            font-family: Tahoma, Verdana, Arial, sans-serif; }
+            </style>
+            </head>
+            <body>
+            <h1>Welcome to nginx!</h1>
+            <p>If you see this page, the nginx web server is successfully installed and
+            working. Further configuration is required.</p>
+
+            <p>For online documentation and support please refer to
+            <a href="http://nginx.org/">nginx.org</a>.<br/>
+            Commercial support is available at
+            <a href="http://nginx.com/">nginx.com</a>.</p>
+
+            <p><em>Thank you for using nginx.</em></p>
+            </body>
+            </html>
+
+        We can now see that after stopping,removing and re-running the container, we get the deafult Nginx index.html 
+        as the response. That happens because when you start a new container, it pulls the default index.html from the original Nginx image, not the modified one.
