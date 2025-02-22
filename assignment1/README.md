@@ -214,3 +214,15 @@ c.
 
         We can now see that after stopping,removing and re-running the container, we get the deafult Nginx index.html 
         as the response. That happens because when you start a new container, it pulls the default index.html from the original Nginx image, not the modified one.
+d.  
+    Start an Nginx container to serve the page from the local folder instead of the default page. Validate that the correct content is served.
+
+        After creating a new directory containing the index.html nginx file, we start the container 
+        with the volume attached to it.
+
+            $docker run -d -p 8000:80 -v /Volumes/custom-nginx:/usr/share/nginx/html nginx:1.27.4;
+            $curl localhost:8000;
+                <h1>Welcome to MY Custom Nginx Page!</h1>
+
+        If we stop and re-start the container we still get the same response. That is because we have attached a volume 
+        to the container, therefore the custom directory is persistent.        
