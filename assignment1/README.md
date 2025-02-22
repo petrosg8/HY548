@@ -226,3 +226,50 @@ d.
 
         If we stop and re-start the container we still get the same response. That is because we have attached a volume 
         to the container, therefore the custom directory is persistent.        
+
+
+3.
+    An example of a very simple Django application is available in the course's repository on GitHub (https://github.com/chazapis/hy548/django). The code is based on the tutorial included in the documentation (https://docs.djangoproject.com/en/5.1/intro/tutorial01/). You are encouraged to follow the tutorial to get acquainted with the commands necessary for the following steps. Write down the commands needed to start a Python container, get a shell environment into it, copy the files in, install the necessary software (listed in requirements.txt), initialize the application, start it, validate that it works.
+
+        It is important that we map local port 8000 to the containers' port 8000:
+        
+            $docker run -p 8000:8000 -it --name django-container python:3.11 /bin/bash;
+        
+        We need to create the directories for the application in the container:
+            
+            $mkdir -p /app/mysite;
+
+
+        In a different local shell tab, we run the commands to copy the files to the container:
+
+            $docker cp ./manage.py django-container:/app/;
+            $docker cp ./requirements.txt django-container:/app/;
+            $docker cp ./mysite/settings.py django-container:/app/mysite/;
+            $docker cp ./mysite/urls.py django-container:/app/mysite/;
+            $docker cp ./mysite/asgi.py django-container:/app/mysite/;
+            $docker cp ./mysite/wsgi.py django-container:/app/mysite/;
+
+        After copying the files, we need to create the directory for the database, required by the django application
+        and also change the permissions for the directory:
+            
+            ./app: $mkdir -p db;
+            ./app: $chmod -R 777 db;
+
+        We then update pip and install the requirements for the application, listed in requirements.txt:
+
+            $pip install --upgrade pip;
+            $pip install -r requirements.txt;
+
+
+        We then can initialize the application:
+
+            $python manage.py migrate;
+
+        And finally run the server on localhost:8000 using:
+
+            $python manage.py runserver 0.0.0.0:8000
+
+        Visiting localhost:8000 on a browser, we can see the default django page.
+        We can also see the logs of the server outputed on the container shell.
+
+4.
