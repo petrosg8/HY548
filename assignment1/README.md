@@ -267,9 +267,34 @@ d.
 
         And finally run the server on localhost:8000 using:
 
-            $python manage.py runserver 0.0.0.0:8000
+            $python manage.py runserver 0.0.0.0:8000;
 
         Visiting localhost:8000 on a browser, we can see the default django page.
         We can also see the logs of the server outputed on the container shell.
 
 4.
+
+a.  (see Dockerfile: /assignment1/Dockerfile)
+
+    There weren't any changes on the codebase of the application.
+    An entrypoint shell script was created (see: /assignment1/django-entrypoint.sh). When the container is started, 
+    the scripts executes, initializing the database of the app and then running the server.
+
+        
+b.  We can compare our local images and their sizes using:
+        
+        $docker images | grep python
+        $docker images | grep my-django-app
+
+            python          3.13.2          08471c63c5fd   3 weeks ago      1.47GB
+            my-django-app   latest          4931c9179b2d   14 minutes ago   1.55GB
+    
+    We can see that our custom image is ~80MB larger than the base python 3.13.2 image.
+    Several things contribute to the increase in size.We installed vim-tiny, which adds extra binaries and libraries, although this increases the image size slightly, because it is already a minimal version of Vim.
+    Django and its dependencies contribute additional files, including Python packages and libraries.
+    We also copied the entire Django project.
+
+    We've taken several steps to keep the image as small as possible. Used --no-cache-dir for pip install which prevents storing package cache, reducing image size. We also removed APT cache after installing packages.
+
+
+
