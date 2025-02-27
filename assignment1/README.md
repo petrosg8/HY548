@@ -294,7 +294,8 @@ b.  We can compare our local images and their sizes using:
     Django and its dependencies contribute additional files, including Python packages and libraries.
     We also copied the entire Django project.
 
-    We've taken several steps to keep the image as small as possible. Used --no-cache-dir for pip install which prevents storing package cache, reducing image size. We also removed APT cache after installing packages.
+    We've taken several steps to keep the image as small as possible. Used --no-cache-dir for pip install which
+    prevents storing package cache, reducing image size. We also removed APT cache after installing packages.
 
 
 
