@@ -352,3 +352,9 @@ d.
             </html>
         
         Confirming that we cant request /error when ran in production mode.
+
+
+
+5.  
+    Created the Github Workflow and tested that it is working correctly.
+    (/.github/workflows/build-push-image.yml)

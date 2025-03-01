@@ -26,7 +26,7 @@ RUN pip install --no-cache-dir -r requirements.txt \
 VOLUME /app/db
 
 # Expose port 8000
-#EXPOSE 8000
+# EXPOSE 8000
 
 
 # Set the entrypoint script to run when the container starts
