@@ -23,7 +23,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./assignment1
+          file: ./assignment1/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-django-app:latest
