@@ -14,13 +14,12 @@ WORKDIR /app
 COPY django /app/
 
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Ensure database directory exists for persistent storage
-RUN mkdir -p /app/db
-RUN chmod -R 777 /app/db
-# Give execute permissions to entrypoint script
-RUN chmod +x /app/django-entrypoint.sh
+RUN pip install --no-cache-dir -r requirements.txt \
+    # Ensure database directory exists for persistent storage
+    && mkdir -p /app/db \
+    && chmod -R 777 /app/db \
+    # Give execute permissions to entrypoint script
+    && chmod +x /app/django-entrypoint.sh;
 
 
 # Set up the volume for database persistence

@@ -276,9 +276,15 @@ d.
 
 a.  (see Dockerfile: /assignment1/Dockerfile)
 
-    There weren't any changes on the codebase of the application.
     An entrypoint shell script was created (see: /assignment1/django-entrypoint.sh). When the container is started, 
     the scripts executes, initializing the database of the app and then running the server.
+
+    Defined a default homepage on /mysite/urls.py.
+
+    Changed the allowed hosts to "['localhost', '127.0.0.1']" in /mysite/settings.py.
+
+    Changed DJANGO_DEBUG=0 to be the default, configuration when running the container without 
+    $-e DJANGO_DEBUG=1; on the commandline
 
         
 b.  We can compare our local images and their sizes using:
@@ -289,13 +295,60 @@ b.  We can compare our local images and their sizes using:
             python          3.13.2          08471c63c5fd   3 weeks ago      1.47GB
             my-django-app   latest          4931c9179b2d   14 minutes ago   1.55GB
     
-    We can see that our custom image is ~80MB larger than the base python 3.13.2 image.
+    The custom image is ~80MB larger than the base python 3.13.2 image.
     Several things contribute to the increase in size.We installed vim-tiny, which adds extra binaries and libraries, although this increases the image size slightly, because it is already a minimal version of Vim.
     Django and its dependencies contribute additional files, including Python packages and libraries.
     We also copied the entire Django project.
 
-    We've taken several steps to keep the image as small as possible. Used --no-cache-dir for pip install which
+    Several steps were taken to keep the image as small as possible. Used --no-cache-dir for pip install which
     prevents storing package cache, reducing image size. We also removed APT cache after installing packages.
 
 
+c.  
+    To tag the image with "latest" tag:
 
+        $docker tag my-django-app petrosg8/my-django-app:latest;
+
+    To push the image to Dockerhub:
+        $docker push petrosg8/my-django-app:latest;    
+
+d.
+    To run the image in debug mode:
+
+        $docker run -d -p 8000:8000 -v /Volumes/django-app-db:/app/db -e DJANGO_DEBUG=1 petrosg8/my-django-app;
+
+    To verify that the app is running on debug mode:
+        
+        $curl localhost:8000/error | grep DEBUG;
+            % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                            Dload  Upload   Total   Spent    Left  Speed
+            100  2333  100  2333    0     0   257k      0 --:--:-- --:--:-- --:--:--  284k
+                You’re seeing this error because you have <code>DEBUG = True</code> in
+
+    And to run it in production mode:
+
+        $docker run -d -p 8000:8000 -v /Volumes/django-app-db:/app/db -e petrosg8/my-django-app;
+
+        or
+
+        $docker run -d -p 8000:8000 -v /Volumes/django-app-db:/app/db -e DJANGO_DEBUG=0 petrosg8/my-django-app;
+
+    To verify that the app is running with debug mode off :
+        
+        $curl localhost:8000
+        <h1>Welcome to My Django App!</h1>% 
+
+        and 
+    
+        $curl localhost:8000/error;
+            <!doctype html>
+            <html lang="en">
+            <head>
+            <title>Not Found</title>
+            </head>
+            <body>
+            <h1>Not Found</h1><p>The requested resource was not found on this server.</p>
+            </body>
+            </html>
+        
+        Confirming that we cant request /error when ran in production mode.

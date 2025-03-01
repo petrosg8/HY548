@@ -25,9 +25,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET', 'django-insecure-k&u_lc^#=1lvbzr3(qf6a0&)zf=+^5mlx8b+0r^o#&-)w6lgg=')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False if os.getenv('DJANGO_DEBUG', '1') == '0' else True
+DEBUG = False if os.getenv('DJANGO_DEBUG', '0') == '0' else True
 
-ALLOWED_HOSTS = ['*']
+
+# Added for security when running on production mode.
+# USE THIS FOR ALLOWING ALL HOSTS
+# ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+
 
 
 # Application definition
@@ -125,3 +131,30 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Ensure logs directory exists
+LOG_DIR = os.path.join(BASE_DIR, 'logs')
+os.makedirs(LOG_DIR, exist_ok=True)
+
+
+# #---------------
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': '/app/logs/django_errors.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
+
+
