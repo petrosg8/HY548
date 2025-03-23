@@ -75,12 +75,17 @@ Assignment 2 - Kubernetes
             </body>
             </html>`
     e.  To copy the index.html file from the pod locally:
+
             $kubectl cp nginx-pod:/usr/share/nginx/html/index.html ./index.html;
+
         After editing the index.html file we can then copy it back into the pod:
+
             $$kubectl cp ./index.html nginx-pod:/usr/share/nginx/html/index.html;
+
         We can verify the changes curling localhost:
             $curl -X GET localhost:8080
-            html { color-scheme: light dark; }
+
+            `html { color-scheme: light dark; }
             body { width: 35em; margin: 0 auto;
             font-family: Tahoma, Verdana, Arial, sans-serif; }
             </style>
@@ -97,10 +102,14 @@ Assignment 2 - Kubernetes
 
             <p><em>Thank you for using nginx.</em></p>
             </body>
-            </html>
+            </html>`
+
     f.  To stop the pod and remove the manifest from Kubernetes we can:
+
             $kubectl delete -f nginx-pod.yaml;
+
         or
+        
             $kubectl delete pod nginx-pod;
         
 2)
