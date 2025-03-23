@@ -4,10 +4,14 @@ Assignment 2 - Kubernetes
     a.
         see ./nginx-pod.yaml
         To install the manifest and start the Pod:
+
             $kubectl apply -f nginx-pod.yaml;
+            
     b.
         To forward port 80 locally:
+
             $sudo kubectl port-forward nginx-pod 80:80;
+
         Without sudo:
             $kubectl port-forward nginx-pod 8080:80;
             `$curl -X GET localhost:8080
@@ -109,7 +113,7 @@ Assignment 2 - Kubernetes
             $kubectl delete -f nginx-pod.yaml;
 
         or
-        
+
             $kubectl delete pod nginx-pod;
         
 2)
