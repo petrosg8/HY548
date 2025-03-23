@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: download-csduocgr-job
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: downloader
+        image: ubuntu:24.04
+        command: ["/bin/bash", "/scripts/download.sh"]
+        volumeMounts:
+        - name: script-volume
+          mountPath: /scripts
+        - name: download-data
+          mountPath: /data
+      volumes:
+      - name: script-volume
+        configMap:
+          name: download-script
+          defaultMode: 0755
+      - name: download-data
+        emptyDir: {}
