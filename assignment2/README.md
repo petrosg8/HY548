@@ -36,15 +36,22 @@ Assignment 2 - Kubernetes
             </html>`
     c.
         To see the logs of the running container:
+
             $kubectl logs nginx-pod;
+            
     d.  To open a shell session inside the running container:
+
             $kubectl exec -it nginx-pod -- /bin/sh;
+
         Go to directory where default index.html is located:
+
             $cd /usr/share/nginx/html;
+
         After editing the /usr/share/nginx/html/index.html, we can curl localhost to 
         verify changes are served:
+
             $$curl -X GET localhost:8080
-            <!DOCTYPE html>
+            `<!DOCTYPE html>
             <html>
             <head>
             <title>Welcome to MY nginx!</title>
@@ -66,7 +73,7 @@ Assignment 2 - Kubernetes
 
             <p><em>Thank you for using nginx.</em></p>
             </body>
-            </html>
+            </html>`
     e.  To copy the index.html file from the pod locally:
             $kubectl cp nginx-pod:/usr/share/nginx/html/index.html ./index.html;
         After editing the index.html file we can then copy it back into the pod:
