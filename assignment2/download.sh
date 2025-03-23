@@ -7,4 +7,5 @@ apt-get update && apt-get install -y wget
 # Confirm wget is installed
 which wget
 # Download the entire site using wget
-wget -E -k -p http://csd.uoc.gr
+#-nH flag is the flag for wget to not create subdirectory /csd.uoc.gr
+wget -E -k -p -nH http://csd.uoc.gr

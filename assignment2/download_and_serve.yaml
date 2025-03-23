@@ -1,0 +1,88 @@
+---
+# PersistentVolumeClaim for shared storage between jobs and the Nginx Pod
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: web-content-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+# Job that downloads the site using Ubuntu 24.04
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: download-csduocgr-job
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: downloader
+        image: ubuntu:24.04
+        command: ["/bin/bash", "/scripts/download.sh"]
+        volumeMounts:
+        - name: script-volume
+          mountPath: /scripts
+        - name: download-data
+          mountPath: /data
+      volumes:
+      - name: script-volume
+        configMap:
+          name: download-script
+          defaultMode: 0755
+      - name: download-data
+        persistentVolumeClaim:
+          claimName: web-content-pvc
+---
+# CronJob that refreshes the download every night at 2:15
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: refresh-csduocgr-job
+spec:
+  schedule: "15 2 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: refresher
+            image: ubuntu:24.04
+            command: ["/bin/bash", "/scripts/download.sh"]
+            volumeMounts:
+            - name: script-volume
+              mountPath: /scripts
+            - name: download-data
+              mountPath: /data
+          volumes:
+          - name: script-volume
+            configMap:
+              name: download-script
+              defaultMode: 0755
+          - name: download-data
+            persistentVolumeClaim:
+              claimName: web-content-pvc
+---
+# Nginx Pod that serves the downloaded site content
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    ports:
+    - containerPort: 80
+    volumeMounts:
+    - name: download-data
+      mountPath: /usr/share/nginx/html
+  volumes:
+  - name: download-data
+    persistentVolumeClaim:
+      claimName: web-content-pvc

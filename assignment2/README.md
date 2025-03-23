@@ -167,6 +167,23 @@ Assignment 2 - Kubernetes
 
             FINISHED --2025-03-23 19:37:25--`
 
-    b.
+    b.  See ./download_and_serve.yaml. After applying the manifest:
+
+            $kubectl apply -f download_and_serve.yaml;
+            persistentvolumeclaim/web-content-pvc created
+            job.batch/download-csduocgr-job created
+            cronjob.batch/refresh-csduocgr-job created
+            pod/nginx-pod created
+
+        Now, when we port forward port 8080:80 we can see csd.uoc.gr/index.html served on localhost:8080.
+
+        The Job is essentially the initialization of this workflow and the CronJob is the one that executes every night at
+        2:15, refreshing the content.
+
+        Data is not directly "communicated" between containers. Instead, config map volumes are created for the Job and the CronJob for the /download.sh script and there is a persistent volume claim for storing the downloaded content,which
+        is mounted to each container respectively. Every time the CronJob is scheduled it downloads the content and stores it in this PVC which is also common/mounted to the Nginx pod in ./usr/share/nginx/html so that it serves the newly fetched content(index.html of csd.uoc.gr).
+
+    c.
+
 
 
