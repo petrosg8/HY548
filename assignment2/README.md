@@ -117,3 +117,56 @@ Assignment 2 - Kubernetes
             $kubectl delete pod nginx-pod;
         
 2)
+    a.  see ./download_csduocgr_job.yaml
+        The manifest contains a Job that uses 
+        ubuntu:24.04 image to run the script
+        ./download.sh which is defined as a config
+        map volume and is mounted to ~/scripts
+        inside the container.There is also a volume
+        (emptyDir)for /data which is the container directory that stores the downloaded content.
+
+        Before starting the job we first need to create
+        the configMap for the script that will be ran:
+
+            $kubectl create configmap download-script --from-file=download.sh;
+        
+        To apply the manifest and start the job:
+
+            $kubectl apply -f download_csduocgr_job.yaml;
+        
+        We then can see completion status of the job using:
+
+            $kubectl get job download-csduocgr-job;
+            NAME                    STATUS     COMPLETIONS   DURATION   AGE
+            download-csduocgr-job   Complete   1/1           13s        2m31s
+
+        or,for more details:
+
+            $kubectl describe job download-csduocgr-job;
+        
+        We can see also see the logs of the pod for more details:
+
+            $kubectl logs download-csduocgr-job-rlq4w;
+            `/usr/bin/wget
+            --2025-03-23 19:37:25--  http://csd.uoc.gr/
+            Resolving csd.uoc.gr (csd.uoc.gr)... 147.52.16.73
+            Connecting to csd.uoc.gr (csd.uoc.gr)|147.52.16.73|:80... connected.
+            HTTP request sent, awaiting response... 301 Moved Permanently
+            Location: https://www.csd.uoc.gr/ [following]
+            --2025-03-23 19:37:25--  https://www.csd.uoc.gr/
+            Resolving www.csd.uoc.gr (www.csd.uoc.gr)... 147.52.16.73
+            Connecting to www.csd.uoc.gr (www.csd.uoc.gr)|147.52.16.73|:443... connected.
+            HTTP request sent, awaiting response... 200 
+            Length: unspecified [text/html]
+            Saving to: 'csd.uoc.gr/index.html'
+
+                0K .......... .......... .......... .......... ..........  453K
+                50K ....                                                   8.09M=0.1s
+
+            2025-03-23 19:37:25 (490 KB/s) - 'csd.uoc.gr/index.html' saved [55441]
+
+            FINISHED --2025-03-23 19:37:25--`
+
+    b.
+
+
