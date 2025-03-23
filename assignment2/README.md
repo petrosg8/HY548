@@ -10,7 +10,7 @@ Assignment 2 - Kubernetes
             $sudo kubectl port-forward nginx-pod 80:80;
         Without sudo:
             $kubectl port-forward nginx-pod 8080:80;
-            $curl -X GET localhost:8080
+            `$curl -X GET localhost:8080
             <!DOCTYPE html>
             <html>
             <head>
@@ -33,7 +33,7 @@ Assignment 2 - Kubernetes
 
             <p><em>Thank you for using nginx.</em></p>
             </body>
-            </html>
+            </html>`
     c.
         To see the logs of the running container:
             $kubectl logs nginx-pod;
