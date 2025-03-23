@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      initContainers:
+      - name: wait-for-download
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            echo "Waiting for downloaded content (index.html) to appear..."
+            # Wait until the file exists in the mounted volume
+            while [ ! -f /usr/share/nginx/html/index.html ]; do
+              echo "index.html not found; sleeping 5 seconds..."
+              sleep 5
+            done
+            echo "index.html found. Proceeding to start Nginx."
+        volumeMounts:
+        - name: web-content
+          mountPath: /usr/share/nginx/html
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: web-content
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: web-content
+        persistentVolumeClaim:
+          claimName: web-content-pvc

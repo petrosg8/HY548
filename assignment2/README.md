@@ -177,13 +177,26 @@ Assignment 2 - Kubernetes
 
         Now, when we port forward port 8080:80 we can see csd.uoc.gr/index.html served on localhost:8080.
 
-        The Job is essentially the initialization of this workflow and the CronJob is the one that executes every night at
-        2:15, refreshing the content.
+        The Job is essentially the job that initially downloads the content of csd.uoc.gr and the CronJob is the one that executes every night at 2:15, refreshing the content.
 
         Data is not directly "communicated" between containers. Instead, config map volumes are created for the Job and the CronJob for the /download.sh script and there is a persistent volume claim for storing the downloaded content,which
         is mounted to each container respectively. Every time the CronJob is scheduled it downloads the content and stores it in this PVC which is also common/mounted to the Nginx pod in ./usr/share/nginx/html so that it serves the newly fetched content(index.html of csd.uoc.gr).
 
-    c.
+    c.  See ./download_and_serve_deployment.yaml.
+        After applying the manifest of this deployment:
+            $kubectl apply -f download_and_serve_deployment.yaml;
+            deployment.apps/nginx-deployment created
 
+            $kubectl get pods;
+            NAME                                READY   STATUS      RESTARTS   AGE
+            download-csduocgr-job-ck8xw         0/1     Completed   0          6m57s
+            nginx-deployment-56489568fd-rglr7   0/1     Init:0/1    0          2s
+            kubectl get pods;
+            NAME                                READY   STATUS      RESTARTS   AGE
+            download-csduocgr-job-ck8xw         0/1     Completed   0          7m2s
+            nginx-deployment-56489568fd-rglr7   1/1     Running     0          7s
 
+        We can now delete the Job and the nginx pod from the ./download_and_serve.yaml manifest since the init job is now done from the init container and served with the nginx container from the deployment.
+        We can see that after the deployment is created there is a brief time window that the nginx pod has not started yet,
+        only the init container. Only after the init container has completed downloading the content, the nginx container starts. We can also see that if we delete the nginx container that serves the content, another container is started,again.Curling the localhost before the init container has finished downloading the content, we can see that calls are not answered, meaning that the nginx container is not running yet.
 
