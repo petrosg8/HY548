@@ -261,7 +261,8 @@ Assignment 2 - Kubernetes
         
     c.
         See ./mathuocgr_deployment.yaml
-        The manifest contains the same deployment/LoadBalancer pair for 2 pods serving the math.uoc.gr site.
+        The manifest contains the same deployment/LoadBalancer pair for 2 pods serving the math.uoc.gr site, 
+        aswell as the ingress object.
 
         We first need to enable the ingress minikube addon
 
