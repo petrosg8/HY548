@@ -308,4 +308,17 @@ Assignment 2 - Kubernetes
             ----    ------  ----                   ----                      -------
             Normal  Sync    9m33s (x2 over 9m54s)  nginx-ingress-controller  Scheduled for sync
 
+        math.uoc.gr pod logs:
+
+            $kubectl logs nginx-download-math-deployment-567f66f796-gxsz7 | grep GET;
+            10.244.0.83 - - [24/Mar/2025:02:15:48 +0000] "GET / HTTP/1.1" 200 325584 "-" "curl/8.10.1" "10.244.0.1"
+            10.244.0.83 - - [24/Mar/2025:02:15:55 +0000] "GET / HTTP/1.1" 200 325584 "-" "curl/8.10.1" "10.244.0.1"
+            10.244.0.83 - - [24/Mar/2025:02:16:08 +0000] "GET / HTTP/1.1" 200 325584 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36" "10.244.0.1"
+            10.244.0.83 - - [24/Mar/2025:02:16:17 +0000] "GET / HTTP/1.1" 200 325584 "-" "curl/8.10.1" "10.244.0.1"
+            10.244.0.83 - - [24/Mar/2025:02:16:22 +0000] "GET / HTTP/1.1" 200 325584 "-" "curl/8.10.1" "10.244.0.1"
         
+        csd.uoc.gr pod logs:
+
+            $kubectl logs nginx-download-site-deployment-55dd99ff58-8swx6 | grep GET;
+            10.244.0.1 - - [24/Mar/2025:02:10:09 +0000] "GET / HTTP/1.1" 200 58857 "-" "curl/8.10.1" "-"
+            10.244.0.1 - - [24/Mar/2025:02:13:14 +0000] "GET / HTTP/1.1" 200 58857 "-" "curl/8.10.1" "-"
