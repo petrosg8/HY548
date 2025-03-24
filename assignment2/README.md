@@ -200,3 +200,111 @@ Assignment 2 - Kubernetes
         We can see that after the deployment is created there is a brief time window that the nginx pod has not started yet,
         only the init container. Only after the init container has completed downloading the content, the nginx container starts. We can also see that if we delete the nginx container that serves the content, another container is started,again.Curling the localhost before the init container has finished downloading the content, we can see that calls are not answered, meaning that the nginx container is not running yet.
 
+    
+3)  a.
+        See ./Dockerfile -> petrosg8/nginx-download-site
+
+        The site to be downloaded is defined when running the image using an enviroment variable:
+            
+            $docker run -d -p 8080:80 -e SITE_URL=http://csd.uoc.gr petrosg8/nginx-download-site:latest;
+
+        By default this enviroment variable is set to http://example.com.
+
+    b.
+        See ./ex3_deployment.yaml
+        The deployment contains the 2 pods that serve the csd.uoc.gr. The site to be served is defined in the yaml as
+        an enviroment variable in the deployment containers. The service is a LoadBalancer service,we then can use :
+
+            $minikube tunnel;
+
+        to access the service from localhost.
+
+
+        After applying the manifest:
+            
+            $kubectl apply -f ex3_deployment.yaml;
+            deployment.apps/nginx-download-site-deployment created
+            service/nginx-download-site-service created 
+
+            $kubectl describe svc nginx-download-site-service
+            Name:                     nginx-download-site-service
+            Namespace:                default
+            Labels:                   <none>
+            Annotations:              <none>
+            Selector:                 app=nginx-download-site
+            Type:                     LoadBalancer
+            IP Family Policy:         SingleStack
+            IP Families:              IPv4
+            IP:                       10.98.141.204
+            IPs:                      10.98.141.204
+            LoadBalancer Ingress:     127.0.0.1
+            Port:                     <unset>  8080/TCP
+            TargetPort:               80/TCP
+            NodePort:                 <unset>  30808/TCP
+            Endpoints:                10.244.0.79:80,10.244.0.84:80
+            Session Affinity:         None
+            External Traffic Policy:  Cluster
+            Events:                   <none>
+
+        We then can use the following command to access the service from localhost:
+            
+            $minikube tunnel;
+        
+        Now we can access the service from localhost and see the csd.uoc.gr site is served 
+        We can see that there are 2 pods running for this deployment:
+
+            $kubectl get pods -l app
+            NAME                                              READY   STATUS    RESTARTS        AGE
+            nginx-download-site-deployment-55dd99ff58-8swx6   1/1     Running   6 (5m12s ago)   19m
+            nginx-download-site-deployment-55dd99ff58-w4npl   1/1     Running   6 (5m17s ago)   19m
+
+        
+    c.
+        See ./mathuocgr_deployment.yaml
+        The manifest contains the same deployment/LoadBalancer pair for 2 pods serving the math.uoc.gr site.
+
+        We first need to enable the ingress minikube addon
+
+            $minikube addons enable ingress;
+
+        Applying the manifest:
+
+            $kubectl apply -f mathuocgr_deployment.yaml
+            deployment.apps/nginx-download-math-deployment created
+            service/nginx-download-math-service created
+            ingress.networking.k8s.io/uoc-ingress created
+
+        With the ingress now created, we can see that calls to http://localhost/math are answered with math.uoc.gr content
+        and calls to http://localhost/csd are answered with csd.uoc.gr content from each service respectively.
+
+        Curling without a /path now is answered with 404:
+
+            $curl localhost;
+            <html>
+            <head><title>404 Not Found</title></head>
+            <body>
+            <center><h1>404 Not Found</h1></center>
+            <hr><center>nginx</center>
+            </body>
+            </html>
+        
+            $kubectl describe ingress uoc-ingress
+            Name:             uoc-ingress
+            Labels:           <none>
+            Namespace:        default
+            Address:          192.168.49.2
+            Ingress Class:    nginx
+            Default backend:  <default>
+            Rules:
+            Host        Path  Backends
+            ----        ----  --------
+            *           
+                        /csd    nginx-download-site-service:8080 (10.244.0.79:80,10.244.0.84:80)
+                        /math   nginx-download-math-service:8080 (10.244.0.85:80,10.244.0.86:80)
+            Annotations:  nginx.ingress.kubernetes.io/rewrite-target: /
+            Events:
+            Type    Reason  Age                    From                      Message
+            ----    ------  ----                   ----                      -------
+            Normal  Sync    9m33s (x2 over 9m54s)  nginx-ingress-controller  Scheduled for sync
+
+        
