@@ -121,7 +121,7 @@ b.
 
         We can also view the Deployment's scaling through a monitoring dashboard(minikube dashboard in this case):
         ### HPA Scaling 
-            ![HPA Scaling](dashboard_screenshot.png)
+            ![HPA Scaling](/assignment3/dashboard_screenshot.png)
 
 
         
