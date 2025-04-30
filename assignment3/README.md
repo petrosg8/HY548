@@ -124,4 +124,5 @@ b.
             ![HPA Scaling](/assignment3/dashboard_screenshot.png)
 
 
+        Scaling stopped at 6 replicas. At 12 minutes, CPU dropped to 0–1% due to load decreasing (test nearing completion), and HPA automatically scaled down to 1 replica by 17m.
         
