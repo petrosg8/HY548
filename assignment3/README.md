@@ -120,7 +120,8 @@ b.
         hello-hpa   Deployment/hello   cpu: 0%/80%          1         8         1          17m
 
         We can also view the Deployment's scaling through a monitoring dashboard(minikube dashboard in this case):
-        ![HPA Scaling](dashboard_screenshot.png)
+        
+            ![HPA Scaling](dashboard_screenshot.png)
 
 
         
