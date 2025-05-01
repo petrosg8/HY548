@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Release.Name }}
+        image: paulbouwer/hello-kubernetes:1.10
+        env:
+        - name: MESSAGE
+          value: "{{ .Values.message }}"
+        - name: HANDLER_PATH_PREFIX
+          value: "{{ .Values.endpoint }}"
+        - name: RENDER_PATH_PREFIX
+          value: "{{ .Values.endpoint }}"
+        resources:
+          limits:
+            {{- if .Values.resources.limits.cpu }}
+            cpu: "{{ .Values.resources.limits.cpu }}"
+            {{- end }}
+            {{- if .Values.resources.limits.memory }}
+            memory: "{{ .Values.resources.limits.memory }}"
+            {{- end }}

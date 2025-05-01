@@ -1,0 +1,14 @@
+replicaCount: 1
+
+message: "Hello world!"
+
+endpoint: "/hello"
+
+resources:
+  limits:
+    cpu: ""
+    memory: ""
+
+autoscaling:
+  targetCPUUtilizationPercentage: 80
+  maxReplicas: 10
