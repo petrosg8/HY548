@@ -1,0 +1,8 @@
+apiVersion: hy548.csd.uoc.gr/v1
+kind: Greeting
+metadata:
+  name: kalimera
+  namespace: default          
+spec:
+  message: "kalimera"
+  replicas: 2
