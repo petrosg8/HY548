@@ -153,7 +153,7 @@ b)  see ./assignment4/ex2/greeting-controller.yaml
 
         As soon as we delete greeting kalimera, the controller picks up the deletion 
         and removes the corresponding service:
-        
+
             $kubectl -n default delete greeting kalimera;            
 
             2025-05-13 18:03:06 INFO check_and_apply: New loop
@@ -161,3 +161,58 @@ b)  see ./assignment4/ex2/greeting-controller.yaml
             2025-05-13 18:03:06 INFO delete_service: Removing service /src/tmp/kalimera.yaml and associated rendered template...
             service "kalimera" deleted
             deployment.apps "kalimera" deleted
+
+
+## Exercise 3 
+
+a),b)   See ./assignment4/ex4/webhook && 
+        ./assignment4/ex4/Dockerfile -> petrosg8/custom-label-webhook:latest   
+
+        First we verify that everything rolled out as expected:
+
+            $kubectl -n custom-label-injector rollout status deploy/custom-label-webhook;
+            deployment "custom-label-webhook" successfully rolled out
+
+
+            $kubectl -n custom-label-injector get svc custom-label-webhook;
+            NAME                   TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+            custom-label-webhook   ClusterIP   10.98.15.195   <none>        443/TCP   7m57s
+
+            $kubectl -n custom-label-injector get secret webhook-server-cert;
+            NAME                  TYPE                DATA   AGE
+            webhook-server-cert   kubernetes.io/tls   3      8m20s
+
+
+
+        To verify that the webhook works correctly, we create a new namespace and
+        inject the custom label  :
+
+            $kubectl create ns test --dry-run=client -o yaml | kubectl apply -f -;
+            $kubectl label ns test custom-label-injector=enabled --overwrite;
+
+        Then we create a pod in that namespace:
+            
+            $kubectl -n test run nginx-test --image=nginx --restart=Never;
+
+        and verify that the custom label has been injected:
+
+            $kubectl -n test get pod nginx-test -o jsonpath='{.metadata.labels}';
+            {"custom-label":"true","run":"nginx-test"}
+
+        webhook logs:
+
+            $kubectl -n custom-label-injector logs -f deploy/custom-label-webhook;
+
+            * Serving Flask app 'controller' (lazy loading)
+            * Environment: production
+            WARNING: This is a development server. Do not use it in a production deployment.
+            Use a production WSGI server instead.
+            * Debug mode: off
+            WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+            * Running on all addresses (0.0.0.0)
+            * Running on https://127.0.0.1:8000
+            * Running on https://10.244.0.7:8000
+            Press CTRL+C to quit
+            10.244.0.1 - - [13/May/2025 18:53:56] "POST /mutate?timeout=10s HTTP/1.1" 200 -
+            10.244.0.1 - - [13/May/2025 19:00:38] "POST /mutate?timeout=10s HTTP/1.1" 200 -
+            10.244.0.1 - - [13/May/2025 19:02:26] "POST /mutate?timeout=10s HTTP/1.1" 200 -
