@@ -1,0 +1,69 @@
+Export linkerd environment variable:
+
+    export PATH=$HOME/.linkerd2/bin:$PATH
+
+Linkerd pre checks:
+
+    linkerd check --pre
+
+Install Gateway API:
+
+    kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.1/standard-install.yaml
+
+Install linkerd CRDs and apply them to the cluster:
+
+    linkerd install --crds | kubectl apply -f -
+
+Install linkerd into cluster:
+
+    linkerd install --set proxyInit.runAsRoot=true | kubectl apply -f -
+
+Check if linkerd is set up correctly: (might take some time)
+
+    linkerd check
+
+Verify that 3 linkerd pods are up and running:
+
+    kubectl get pods -n linkerd
+
+Run demo application:
+
+    kubectl apply -f https://run.linkerd.io/emojivoto.yml
+
+    and wait for all 4 pods to be running :
+        kubectl get pods -n emojivoto
+
+Port forward localhost:
+
+    kubectl -n emojivoto port-forward svc/web-svc 8080:80
+
+open localhost.
+
+Check whether service is proxied:
+
+    linkerd -n emojivoto check --proxy
+
+
+
+Mesh the application(add sidecars):
+
+    kubectl get -n emojivoto deploy -o yaml \
+    | linkerd inject - \
+    | kubectl apply -f -
+
+This command retrieves all of the deployments running in the emojivoto 
+namespace, runs their manifests through linkerd inject,
+and then reapplies it to the cluster. 
+(The linkerd inject command simply adds annotations to the pod spec 
+that instruct Linkerd to inject the proxy into the pods 
+when they are created.)
+
+Verify service mesh is running:
+
+    linkerd -n emojivoto check --proxy
+
+
+
+
+linkerd viz install | kubectl apply -f -
+linkerd viz dashboard &
